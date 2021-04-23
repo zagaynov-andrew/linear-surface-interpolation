@@ -1139,7 +1139,53 @@ const Data = {
 		// 		// 						this.pointsCtr[i].y - this.pointsCtr[i - 1].y));
 		// 	}
 		// }
-
+		let chordal_len_v, chordal_len_u;
+		if (this.chordal.checked)
+		{
+			chordal_len_v = new Array(N_ctr);
+			for (i = 0; i < N_ctr; i++)
+				chordal_len_v[i] = 0;
+			for (i = 0; i < N_ctr; i++)
+				for (j = 1; j < M_ctr; j++)
+				{
+					chordal_len_v[i] += Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i][j - 1].x,
+													this.pointsCtr[i][j].y - this.pointsCtr[i][j - 1].y,
+													this.pointsCtr[i][j].z - this.pointsCtr[i][j - 1].z);
+				}
+			chordal_len_u = new Array(M_ctr);
+			for (i = 0; i < M_ctr; i++)
+				chordal_len_u[i] = 0;
+			for (j = 0; j < M_ctr; j++)
+				for (i = 1; i < N_ctr; i++)
+				{
+					chordal_len_u[j] += Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i - 1][j].x,
+													this.pointsCtr[i][j].y - this.pointsCtr[i - 1][j].y,
+													this.pointsCtr[i][j].z - this.pointsCtr[i - 1][j].z);
+				}
+		}
+		if (this.centripetal.checked)
+		{
+			chordal_len_v = new Array(N_ctr);
+			for (i = 0; i < N_ctr; i++)
+				chordal_len_v[i] = 0;
+			for (i = 0; i < N_ctr; i++)
+				for (j = 1; j < M_ctr; j++)
+				{
+					chordal_len_v[i] += Math.sqrt(Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i][j - 1].x,
+																this.pointsCtr[i][j].y - this.pointsCtr[i][j - 1].y,
+																this.pointsCtr[i][j].z - this.pointsCtr[i][j - 1].z));
+				}
+			chordal_len_u = new Array(M_ctr);
+			for (i = 0; i < M_ctr; i++)
+				chordal_len_u[i] = 0;
+			for (j = 0; j < M_ctr; j++)
+				for (i = 1; i < N_ctr; i++)
+				{
+					chordal_len_u[j] += Math.sqrt(Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i - 1][j].x,
+																this.pointsCtr[i][j].y - this.pointsCtr[i - 1][j].y,
+																this.pointsCtr[i][j].z - this.pointsCtr[i - 1][j].z));
+				}
+		}
 		// INITIALIZE PARAMETRIC COORDINATES
 		for (i = 0; i < N_ctr; i++) 
 		{
@@ -1150,24 +1196,32 @@ const Data = {
 					this.pointsCtr[i][j].u = i / (N_ctr - 1);
 					this.pointsCtr[i][j].v = j / (M_ctr - 1);
 				}
-				// if (this.chordal.checked)
-				// {
-				// 	if (i != 0)
-				// 	this.pointsCtr[i][j].u = this.pointsCtr[i - 1][j].u + 
-				// 							Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i - 1][j].x,
-				// 										this.pointsCtr[i][j].y - this.pointsCtr[i - 1][j].y,
-				// 										this.pointsCtr[i][j].z - this.pointsCtr[i - 1][j].z) / chord_u;
-				// 	if (j != 0)
-				// 	this.pointsCtr[i][j].v = this.pointsCtr[i][j - 1].v + 
-				// 							Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i][j - 1].x,
-				// 										this.pointsCtr[i][j].y - this.pointsCtr[i][j - 1].y,
-				// 										this.pointsCtr[i][j].z - this.pointsCtr[i][j - 1].z) / chord_v;
-				// }
-				// if (this.centripetal.checked)
-				// {
-				// 	this.pointsCtr[i][j].u = u;
-				// 	this.pointsCtr[i][j].v = v;
-				// }
+				if (this.chordal.checked)
+				{
+					if (i != 0)
+					this.pointsCtr[i][j].u = this.pointsCtr[i - 1][j].u + 
+											Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i - 1][j].x,
+														this.pointsCtr[i][j].y - this.pointsCtr[i - 1][j].y,
+														this.pointsCtr[i][j].z - this.pointsCtr[i - 1][j].z) / chordal_len_u[j];
+					if (j != 0)
+					this.pointsCtr[i][j].v = this.pointsCtr[i][j - 1].v + 
+											Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i][j - 1].x,
+														this.pointsCtr[i][j].y - this.pointsCtr[i][j - 1].y,
+														this.pointsCtr[i][j].z - this.pointsCtr[i][j - 1].z) / chordal_len_v[i];
+				}
+				if (this.centripetal.checked)
+				{
+					if (i != 0)
+					this.pointsCtr[i][j].u = this.pointsCtr[i - 1][j].u + 
+								Math.sqrt(Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i - 1][j].x,
+														this.pointsCtr[i][j].y - this.pointsCtr[i - 1][j].y,
+														this.pointsCtr[i][j].z - this.pointsCtr[i - 1][j].z)) / chordal_len_u[j];
+					if (j != 0)
+					this.pointsCtr[i][j].v = this.pointsCtr[i][j - 1].v + 
+								Math.sqrt(Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i][j - 1].x,
+														this.pointsCtr[i][j].y - this.pointsCtr[i][j - 1].y,
+														this.pointsCtr[i][j].z - this.pointsCtr[i][j - 1].z)) / chordal_len_v[i];
+				}
 			}
 		}
 
