@@ -1120,28 +1120,11 @@ const Data = {
 		const N = this.N.value;
 		const M = this.M.value;
 
-		// // calculating the total chord length
-		// for (i = 1; i < N_ctr; i++)
-		// {
-		// 	for (j = 1; j < M_ctr; j++)
-		// 	{
-		// 		if (this.chordal.checked)
-		// 		{
-		// 			chord_u += Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i - 1][j].x,
-		// 									this.pointsCtr[i][j].y - this.pointsCtr[i - 1][j].y,
-		// 									this.pointsCtr[i][j].z - this.pointsCtr[i - 1][j].z);
-		// 			chord_v += Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i][j - 1].x,
-		// 									this.pointsCtr[i][j].y - this.pointsCtr[i][j - 1].y,
-		// 									this.pointsCtr[i][j].z - this.pointsCtr[i][j - 1].z);
-		// 		}
-		// 		// if (this.centripetal.checked)
-		// 		// 	d += Math.sqrt(Math.hypot(this.pointsCtr[i].x - this.pointsCtr[i - 1].x,
-		// 		// 						this.pointsCtr[i].y - this.pointsCtr[i - 1].y));
-		// 	}
-		// }
+		// calculating the total chord length for chordal method
 		let chordal_len_v, chordal_len_u;
 		if (this.chordal.checked)
 		{
+			// the total chord length (parameter v)
 			chordal_len_v = new Array(N_ctr);
 			for (i = 0; i < N_ctr; i++)
 				chordal_len_v[i] = 0;
@@ -1152,6 +1135,7 @@ const Data = {
 													this.pointsCtr[i][j].y - this.pointsCtr[i][j - 1].y,
 													this.pointsCtr[i][j].z - this.pointsCtr[i][j - 1].z);
 				}
+			// the total chord length (parameter u)
 			chordal_len_u = new Array(M_ctr);
 			for (i = 0; i < M_ctr; i++)
 				chordal_len_u[i] = 0;
@@ -1163,8 +1147,10 @@ const Data = {
 													this.pointsCtr[i][j].z - this.pointsCtr[i - 1][j].z);
 				}
 		}
+		// calculating the total chord length for centripetal method
 		if (this.centripetal.checked)
 		{
+			// the total chord length (parameter v)
 			chordal_len_v = new Array(N_ctr);
 			for (i = 0; i < N_ctr; i++)
 				chordal_len_v[i] = 0;
@@ -1175,6 +1161,7 @@ const Data = {
 																this.pointsCtr[i][j].y - this.pointsCtr[i][j - 1].y,
 																this.pointsCtr[i][j].z - this.pointsCtr[i][j - 1].z));
 				}
+			// the total chord length (parameter u)
 			chordal_len_u = new Array(M_ctr);
 			for (i = 0; i < M_ctr; i++)
 				chordal_len_u[i] = 0;
