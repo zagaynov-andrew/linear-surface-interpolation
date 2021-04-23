@@ -1186,13 +1186,8 @@ const Data = {
 		i_gr = 0;
 		for (i = 0; i < N; i++)
 		{
-			
-			
 			v = 0;
 			j_gr = 0;
-
-
-
 			for (j = 0; j < M; j++)
 			{
 				// CALCULATE SPLINE COORDINATES
@@ -1201,14 +1196,11 @@ const Data = {
 				y = this.pointsCtr[i_gr][j_gr].y * (1 - xi) + this.pointsCtr[i_gr][j_gr + 1].y * xi;
 				z = this.pointsCtr[i_gr][j_gr].z * (1 - xi) + this.pointsCtr[i_gr][j_gr + 1].z * xi;
 				p0 = new Point(x, y, z);
-				// this.pointsSpline[i][j] = p0;
-
 
 				x = this.pointsCtr[i_gr + 1][j_gr].x * (1 - xi) + this.pointsCtr[i_gr + 1][j_gr + 1].x * xi;
 				y = this.pointsCtr[i_gr + 1][j_gr].y * (1 - xi) + this.pointsCtr[i_gr + 1][j_gr + 1].y * xi;
 				z = this.pointsCtr[i_gr + 1][j_gr].z * (1 - xi) + this.pointsCtr[i_gr + 1][j_gr + 1].z * xi;
 				p1 = new Point(x, y, z);
-				// this.pointsSpline[i][j] = p1;
 
 				omega = (u - this.pointsCtr[i_gr][0].u) / (this.pointsCtr[i_gr + 1][0].u - this.pointsCtr[i_gr][0].u);
 				
@@ -1218,35 +1210,45 @@ const Data = {
 				puv = new Point(x, y, z);
 				this.pointsSpline[i][j] = puv;
 
+				//CALCULATE TANGENT VECTORS
+				x = (this.pointsCtr[i_gr][j_gr + 1].x - this.pointsCtr[i_gr][j_gr].x)
+							/ (this.pointsCtr[0][j_gr + 1].v - this.pointsCtr[0][j_gr].v);
+				y = (this.pointsCtr[i_gr][j_gr + 1].y - this.pointsCtr[i_gr][j_gr].y)
+							/ (this.pointsCtr[0][j_gr + 1].v - this.pointsCtr[0][j_gr].v);
+				z = (this.pointsCtr[i_gr][j_gr + 1].z - this.pointsCtr[i_gr][j_gr].z)
+							/ (this.pointsCtr[0][j_gr + 1].v - this.pointsCtr[0][j_gr].v);
+				let d_p0_v = new Point(x, y, z);
+
+				x = (this.pointsCtr[i_gr + 1][j_gr + 1].x - this.pointsCtr[i_gr + 1][j_gr].x)
+							/ (this.pointsCtr[0][j_gr + 1].v - this.pointsCtr[0][j_gr].v);
+				y = (this.pointsCtr[i_gr + 1][j_gr + 1].y - this.pointsCtr[i_gr + 1][j_gr].y)
+							/ (this.pointsCtr[0][j_gr + 1].v - this.pointsCtr[0][j_gr].v);
+				z = (this.pointsCtr[i_gr + 1][j_gr + 1].z - this.pointsCtr[i_gr + 1][j_gr].z)
+							/ (this.pointsCtr[0][j_gr + 1].v - this.pointsCtr[0][j_gr].v);
+				let d_p1_v = new Point(x, y, z);
+
+				const x_v = d_p0_v.x * (1 - omega) + d_p1_v.x * omega;
+				const y_v = d_p0_v.y * (1 - omega) + d_p1_v.y * omega;
+				const z_v = d_p0_v.z * (1 - omega) + d_p1_v.z * omega;
+
+				const x_u = (p1.x - p0.x) / (this.pointsCtr[i_gr + 1][0].u - this.pointsCtr[i_gr][0].u);
+				const y_u = (p1.y - p0.y) / (this.pointsCtr[i_gr + 1][0].u - this.pointsCtr[i_gr][0].u);
+				const z_u = (p1.z - p0.z) / (this.pointsCtr[i_gr + 1][0].u - this.pointsCtr[i_gr][0].u);
+
+				const pt_u = vec3.fromValues(x_u, y_u, z_u);
+				const pt_v = vec3.fromValues(x_v, y_v, z_v);
+
+				//CALCULATE NORMAL VECTOR
+				let normal = vec3.create();
+				normal = vec3.cross(normal, pt_u, pt_v);
+
+				this.normalsSpline[i][j][0] = normal[0];
+				this.normalsSpline[i][j][1] = normal[1];
+				this.normalsSpline[i][j][2] = normal[2];
+
 				v += dv;
-				
-
 				while (j_gr + 1 != M_ctr - 1 && v > this.pointsCtr[0][j_gr + 1].v)
-				{
 					j_gr++;
-					// console.log(j_gr);
-				}
-				
-
-
-				// //CALCULATE TANGENT VECTORS
-				// const x_u = ;
-				// const y_u = ;
-				// const z_u = ;
-
-				// const x_v = ;
-				// const y_v = ;
-				// const z_v = ;
-
-				// const pt_u = vec3.fromValues(x_u, y_u, z_u);
-				// const pt_v = vec3.fromValues(x_v, y_v, z_v);
-
-				// //CALCULATE NORMAL VECTOR
-				// const normal = vec3.create();
-
-				// this.normalsSpline[i][j][0] = normal[0];
-				// this.normalsSpline[i][j][1] = normal[1];
-				// this.normalsSpline[i][j][2] = normal[2];
 			}
 			
 			u += du;
