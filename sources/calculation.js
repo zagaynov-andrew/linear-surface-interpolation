@@ -1174,43 +1174,46 @@ const Data = {
 				}
 		}
 		// INITIALIZE PARAMETRIC COORDINATES
-		for (i = 0; i < N_ctr; i++) 
+		if (this.uniform.checked)
 		{
-			for (j = 0; j < M_ctr; j++)
-			{
-				if (this.uniform.checked)
-				{
-					this.pointsCtr[i][j].u = i / (N_ctr - 1);
-					this.pointsCtr[i][j].v = j / (M_ctr - 1);
-				}
-				if (this.chordal.checked)
-				{
-					if (i != 0)
-					this.pointsCtr[i][j].u = this.pointsCtr[i - 1][j].u + 
-											Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i - 1][j].x,
-														this.pointsCtr[i][j].y - this.pointsCtr[i - 1][j].y,
-														this.pointsCtr[i][j].z - this.pointsCtr[i - 1][j].z) / chordal_len_u[j];
-					if (j != 0)
-					this.pointsCtr[i][j].v = this.pointsCtr[i][j - 1].v + 
-											Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i][j - 1].x,
-														this.pointsCtr[i][j].y - this.pointsCtr[i][j - 1].y,
-														this.pointsCtr[i][j].z - this.pointsCtr[i][j - 1].z) / chordal_len_v[i];
-				}
-				if (this.centripetal.checked)
-				{
-					if (i != 0)
-					this.pointsCtr[i][j].u = this.pointsCtr[i - 1][j].u + 
-								Math.sqrt(Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i - 1][j].x,
-														this.pointsCtr[i][j].y - this.pointsCtr[i - 1][j].y,
-														this.pointsCtr[i][j].z - this.pointsCtr[i - 1][j].z)) / chordal_len_u[j];
-					if (j != 0)
-					this.pointsCtr[i][j].v = this.pointsCtr[i][j - 1].v + 
-								Math.sqrt(Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i][j - 1].x,
-														this.pointsCtr[i][j].y - this.pointsCtr[i][j - 1].y,
-														this.pointsCtr[i][j].z - this.pointsCtr[i][j - 1].z)) / chordal_len_v[i];
-				}
-			}
+			for (i = 1; i < N_ctr; i++)
+				this.pointsCtr[i][0].u = i / (N_ctr - 1);
+			for (j = 1; j < M_ctr; j++)
+				this.pointsCtr[0][j].v = j / (M_ctr - 1);
 		}
+		if (this.chordal.checked)
+		{
+			for (i = 1; i < N_ctr; i++)
+				this.pointsCtr[i][0].u = this.pointsCtr[i - 1][0].u + 
+						Math.hypot(	this.pointsCtr[i][0].x - this.pointsCtr[i - 1][0].x,
+									this.pointsCtr[i][0].y - this.pointsCtr[i - 1][0].y,
+									this.pointsCtr[i][0].z - this.pointsCtr[i - 1][0].z) / chordal_len_u[0];
+			for (j = 1; j < M_ctr; j++)
+				this.pointsCtr[0][j].v = this.pointsCtr[0][j - 1].v + 
+						Math.hypot(	this.pointsCtr[0][j].x - this.pointsCtr[0][j - 1].x,
+									this.pointsCtr[0][j].y - this.pointsCtr[0][j - 1].y,
+									this.pointsCtr[0][j].z - this.pointsCtr[0][j - 1].z) / chordal_len_v[0];
+		}
+		if (this.centripetal.checked)
+		{
+			for (i = 1; i < N_ctr; i++)
+				this.pointsCtr[i][0].u = this.pointsCtr[i - 1][0].u + 
+							Math.sqrt(Math.hypot(	this.pointsCtr[i][0].x - this.pointsCtr[i - 1][0].x,
+													this.pointsCtr[i][0].y - this.pointsCtr[i - 1][0].y,
+													this.pointsCtr[i][0].z - this.pointsCtr[i - 1][0].z)) / chordal_len_u[0];
+			for (j = 1; j < M_ctr; j++)
+				this.pointsCtr[0][j].v = this.pointsCtr[0][j - 1].v + 
+							Math.sqrt(Math.hypot(	this.pointsCtr[0][j].x - this.pointsCtr[0][j - 1].x,
+													this.pointsCtr[0][j].y - this.pointsCtr[0][j - 1].y,
+													this.pointsCtr[0][j].z - this.pointsCtr[0][j - 1].z)) / chordal_len_v[0];
+		}
+		for (i = 0; i < N_ctr; i++) 
+			for (j = 1; j < M_ctr; j++)
+				this.pointsCtr[i][j].u = this.pointsCtr[i][0].u;
+		for (i = 1; i < N_ctr; i++) 
+			for (j = 0; j < M_ctr; j++)
+				this.pointsCtr[i][j].v = this.pointsCtr[i][0].v;
+
 
 		this.pointsSpline = new Array(N);
 		this.normalsSpline = new Array(N);
