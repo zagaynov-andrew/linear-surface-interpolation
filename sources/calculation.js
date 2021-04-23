@@ -1107,35 +1107,69 @@ const Data = {
 	},
 	calculateLineSurfaceSpline: function () {
 
-		let i, j;
+		let i, j, i_gr, j_gr;
+		let x, y , z;
+		let du, dv;
+		let u, v;
+		let xi, omega;
+		let p0, p1, puv;
+		let chord_u = 0, chord_v = 0;
 
 		const N_ctr = this.N_ctr.value;
 		const M_ctr = this.M_ctr.value;
 		const N = this.N.value;
 		const M = this.M.value;
 
-		// INITIALIZE PARAMETRIC COORDINATES
-		// for (i = 0; i < N_ctr; i++) 
+		// // calculating the total chord length
+		// for (i = 1; i < N_ctr; i++)
 		// {
-		// 	for (j = 0; j < M_ctr; j++)
+		// 	for (j = 1; j < M_ctr; j++)
 		// 	{
-		//      if (this.uniform.checked)
-		//      {
-		//          this.pointsCtr[i][j].u = u;
-		//          this.pointsCtr[i][j].v = v;
-		//      }
-		//      if (this.chordal.checked)
-		//      {
-		//          this.pointsCtr[i][j].u = u;
-		//          this.pointsCtr[i][j].v = v;
-		//      }
-		//      if (this.centripetal.checked)
-		//      {
-		//          this.pointsCtr[i][j].u = u;
-		//          this.pointsCtr[i][j].v = v;
-		//      }
+		// 		if (this.chordal.checked)
+		// 		{
+		// 			chord_u += Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i - 1][j].x,
+		// 									this.pointsCtr[i][j].y - this.pointsCtr[i - 1][j].y,
+		// 									this.pointsCtr[i][j].z - this.pointsCtr[i - 1][j].z);
+		// 			chord_v += Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i][j - 1].x,
+		// 									this.pointsCtr[i][j].y - this.pointsCtr[i][j - 1].y,
+		// 									this.pointsCtr[i][j].z - this.pointsCtr[i][j - 1].z);
+		// 		}
+		// 		// if (this.centripetal.checked)
+		// 		// 	d += Math.sqrt(Math.hypot(this.pointsCtr[i].x - this.pointsCtr[i - 1].x,
+		// 		// 						this.pointsCtr[i].y - this.pointsCtr[i - 1].y));
 		// 	}
 		// }
+
+		// INITIALIZE PARAMETRIC COORDINATES
+		for (i = 0; i < N_ctr; i++) 
+		{
+			for (j = 0; j < M_ctr; j++)
+			{
+				if (this.uniform.checked)
+				{
+					this.pointsCtr[i][j].u = i / (N_ctr - 1);
+					this.pointsCtr[i][j].v = j / (M_ctr - 1);
+				}
+				// if (this.chordal.checked)
+				// {
+				// 	if (i != 0)
+				// 	this.pointsCtr[i][j].u = this.pointsCtr[i - 1][j].u + 
+				// 							Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i - 1][j].x,
+				// 										this.pointsCtr[i][j].y - this.pointsCtr[i - 1][j].y,
+				// 										this.pointsCtr[i][j].z - this.pointsCtr[i - 1][j].z) / chord_u;
+				// 	if (j != 0)
+				// 	this.pointsCtr[i][j].v = this.pointsCtr[i][j - 1].v + 
+				// 							Math.hypot(	this.pointsCtr[i][j].x - this.pointsCtr[i][j - 1].x,
+				// 										this.pointsCtr[i][j].y - this.pointsCtr[i][j - 1].y,
+				// 										this.pointsCtr[i][j].z - this.pointsCtr[i][j - 1].z) / chord_v;
+				// }
+				// if (this.centripetal.checked)
+				// {
+				// 	this.pointsCtr[i][j].u = u;
+				// 	this.pointsCtr[i][j].v = v;
+				// }
+			}
+		}
 
 		this.pointsSpline = new Array(N);
 		this.normalsSpline = new Array(N);
@@ -1146,39 +1180,82 @@ const Data = {
 				this.normalsSpline[i][j] = new Array(3);
 		}
 
+		du = (this.pointsCtr[N_ctr - 1][0].u - this.pointsCtr[0][0].u) / (N - 1);
+		dv = (this.pointsCtr[0][M_ctr - 1].v - this.pointsCtr[0][0].v) / (M - 1);
+		u = 0;
+		i_gr = 0;
+		for (i = 0; i < N; i++)
+		{
+			
+			
+			v = 0;
+			j_gr = 0;
 
-		//for (i = 0; i < N; i++)
-		//{
-		//	for (j = 0; j < M; j++)
-		//	{
-		//      // CALCULATE SPLINE COORDINATES
-		//      const x = ;
-		//      const y = ;
-		//      const z = ;
-		//      
-		//      pt = new Point(x, y, z);
-		//      this.pointsSpline[i][j] = pt;
 
-		//      //CALCULATE TANGENT VECTORS
-		//      const x_u = ;
-		//      const y_u = ;
-		//      const z_u = ;
 
-		//      const x_v = ;
-		//      const y_v = ;
-		//      const z_v = ;
+			for (j = 0; j < M; j++)
+			{
+				// CALCULATE SPLINE COORDINATES
+				xi = (v - this.pointsCtr[0][j_gr].v) / (this.pointsCtr[0][j_gr + 1].v - this.pointsCtr[0][j_gr].v);
+				x = this.pointsCtr[i_gr][j_gr].x * (1 - xi) + this.pointsCtr[i_gr][j_gr + 1].x * xi;
+				y = this.pointsCtr[i_gr][j_gr].y * (1 - xi) + this.pointsCtr[i_gr][j_gr + 1].y * xi;
+				z = this.pointsCtr[i_gr][j_gr].z * (1 - xi) + this.pointsCtr[i_gr][j_gr + 1].z * xi;
+				p0 = new Point(x, y, z);
+				// this.pointsSpline[i][j] = p0;
 
-		//      const pt_u = vec3.fromValues(x_u, y_u, z_u);
-		//      const pt_v = vec3.fromValues(x_v, y_v, z_v);
 
-		//      //CALCULATE NORMAL VECTOR
-		//      const normal = vec3.create();
+				x = this.pointsCtr[i_gr + 1][j_gr].x * (1 - xi) + this.pointsCtr[i_gr + 1][j_gr + 1].x * xi;
+				y = this.pointsCtr[i_gr + 1][j_gr].y * (1 - xi) + this.pointsCtr[i_gr + 1][j_gr + 1].y * xi;
+				z = this.pointsCtr[i_gr + 1][j_gr].z * (1 - xi) + this.pointsCtr[i_gr + 1][j_gr + 1].z * xi;
+				p1 = new Point(x, y, z);
+				// this.pointsSpline[i][j] = p1;
 
-		//      this.normalsSpline[i][j][0] = normal[0];
-		//      this.normalsSpline[i][j][1] = normal[1];
-		//      this.normalsSpline[i][j][2] = normal[2];
-		//	}
-		//}
+				omega = (u - this.pointsCtr[i_gr][0].u) / (this.pointsCtr[i_gr + 1][0].u - this.pointsCtr[i_gr][0].u);
+				
+				x = p0.x * (1 - omega) + p1.x * omega;
+				y = p0.y * (1 - omega) + p1.y * omega;
+				z = p0.z * (1 - omega) + p1.z * omega;
+				puv = new Point(x, y, z);
+				this.pointsSpline[i][j] = puv;
+
+				v += dv;
+				
+
+				while (j_gr + 1 != M_ctr - 1 && v > this.pointsCtr[0][j_gr + 1].v)
+				{
+					j_gr++;
+					// console.log(j_gr);
+				}
+				
+
+
+				// //CALCULATE TANGENT VECTORS
+				// const x_u = ;
+				// const y_u = ;
+				// const z_u = ;
+
+				// const x_v = ;
+				// const y_v = ;
+				// const z_v = ;
+
+				// const pt_u = vec3.fromValues(x_u, y_u, z_u);
+				// const pt_v = vec3.fromValues(x_v, y_v, z_v);
+
+				// //CALCULATE NORMAL VECTOR
+				// const normal = vec3.create();
+
+				// this.normalsSpline[i][j][0] = normal[0];
+				// this.normalsSpline[i][j][1] = normal[1];
+				// this.normalsSpline[i][j][2] = normal[2];
+			}
+			
+			u += du;
+			while (i_gr + 1 != N_ctr - 1 && u > this.pointsCtr[i_gr + 1][0].u)
+			{
+				i_gr++;
+				// console.log(i_gr);
+			}
+		}
 
 		this.verticesSpline = new Float32Array(N * M * 6);
 		for (i = 0; i < N; i++)
